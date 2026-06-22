@@ -2,9 +2,42 @@
 
 Two frontends (React + SvelteKit) share one auth service backed by [ZITADEL](https://zitadel.com). A .NET API validates JWTs from the auth service.
 
-**Requires:** Docker, Node.js 18+, .NET SDK 10
+## Quick start (Docker — recommended)
 
-## Quick start
+**Requires:** Docker with Compose v2.20+
+
+```sh
+cp .env.example .env
+docker compose up --build --wait
+```
+
+That single command starts ZITADEL, the auth service, both frontends, and the .NET API. No `npm install`, no manual PAT setup, no extra terminals.
+
+| App | URL | What to try |
+|-----|-----|-------------|
+| Auth service | http://localhost:5003/login | Login, manage users (admin only) |
+| React app | http://localhost:5001 | Login → **Call API** button |
+| Svelte app | http://localhost:5002 | Login → logout |
+| ZITADEL console | http://localhost:8080 | Identity provider admin UI |
+
+Login with `zitadel-admin@zitadel.localhost` / `Password1!` on any app.
+
+To stop everything:
+
+```sh
+docker compose down
+```
+
+To reset ZITADEL data and start fresh:
+
+```sh
+docker compose down -v
+docker compose up --build --wait
+```
+
+## Local development (without Docker)
+
+**Requires:** Docker (for ZITADEL only), Node.js 18+, .NET SDK 10
 
 ### 1. Start ZITADEL
 
@@ -72,15 +105,5 @@ Start each service in a separate terminal:
 npm run dev -- --port 5003                          # Auth service  → http://localhost:5003
 npm run dev --prefix app1 -- --port 5001            # React app     → http://localhost:5001
 npm run dev --prefix app2 -- --port 5002            # Svelte app    → http://localhost:5002
-cd app1api && dotnet run                            # .NET API      → http://localhost:5005
+cd app1api && dotnet run --urls http://localhost:5005   # .NET API  → http://localhost:5005
 ```
-
-### 5. Test
-
-| App | URL | What to try |
-|-----|-----|-------------|
-| Auth service | http://localhost:5003/login | Login, manage users (admin only) |
-| React app | http://localhost:5001 | Login → **Call API** button |
-| Svelte app | http://localhost:5002 | Login → logout |
-
-Login with `zitadel-admin@zitadel.localhost` / `Password1!` on any app.

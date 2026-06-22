@@ -35,6 +35,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 			const allowed = [
 				baseUrl,
 				'http://localhost:5001',
+				'http://localhost:5002',
 				'http://localhost:5003'
 			];
 			if (url.startsWith('/')) {

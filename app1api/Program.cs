@@ -69,4 +69,4 @@ app.MapGet("/api/projects", (ClaimsPrincipal user) =>
 })
 .RequireAuthorization();
 
-app.Run("http://localhost:5005");
+app.Run();

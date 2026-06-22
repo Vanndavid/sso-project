@@ -1,0 +1,83 @@
+include:
+  - path: ./zitadel-compose/docker-compose.yml
+
+services:
+  zitadel-internal:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    volumes:
+      - ./docker/zitadel-internal.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - zitadel
+    depends_on:
+      zitadel-api:
+        condition: service_healthy
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.auth
+    restart: unless-stopped
+    ports:
+      - ${AUTH_SERVICE_PORT:-5003}:5003
+    environment:
+      AUTH_SECRET: ${AUTH_SECRET}
+      ZITADEL_ISSUER: http://zitadel-internal
+    volumes:
+      - zitadel-bootstrap:/zitadel/bootstrap:ro
+    networks:
+      - zitadel
+    depends_on:
+      zitadel-api:
+        condition: service_healthy
+      zitadel-internal:
+        condition: service_started
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:5003/login').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  app1:
+    build:
+      context: ./app1
+    restart: unless-stopped
+    ports:
+      - ${APP1_PORT:-5001}:5001
+    networks:
+      - zitadel
+    depends_on:
+      auth-service:
+        condition: service_started
+
+  app2:
+    build:
+      context: ./app2
+    restart: unless-stopped
+    ports:
+      - ${APP2_PORT:-5002}:5002
+    networks:
+      - zitadel
+    depends_on:
+      auth-service:
+        condition: service_started
+
+  app1api:
+    build:
+      context: ./app1api
+    restart: unless-stopped
+    ports:
+      - ${APP1API_PORT:-5005}:5005
+    environment:
+      Auth__Secret: ${AUTH_SECRET}
+      ASPNETCORE_URLS: http://0.0.0.0:5005
+    networks:
+      - zitadel
+    depends_on:
+      auth-service:
+        condition: service_started
