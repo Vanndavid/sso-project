@@ -1,7 +1,7 @@
-import { env } from '$env/dynamic/private';
+import { zitadelIssuer, zitadelToken } from './zitadel-config';
 
-const token = env.ZITADEL_SERVICE_ACCOUNT_TOKEN;
-const issuer = env.ZITADEL_ISSUER ?? 'http://localhost:8080';
+const token = zitadelToken;
+const issuer = zitadelIssuer;
 
 interface ListUsersResponse {
 	result?: Array<{
