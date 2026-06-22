@@ -18,13 +18,14 @@ ZITADEL runs at http://localhost:8080. Default admin: `zitadel-admin@zitadel.loc
 
 ### 2. Get your secrets
 
-**`ZITADEL_SERVICE_ACCOUNT_TOKEN`** — a Personal Access Token (PAT) for the auth service to call ZITADEL APIs:
+**`ZITADEL_SERVICE_ACCOUNT_TOKEN`** — on first startup, ZITADEL creates a `login-client` service user and writes its PAT to a bootstrap file. Copy it:
 
-1. Sign in at http://localhost:8080 with the admin credentials above
-2. Go to **Users → Service Users → New**
-3. Create a user with **Bearer** token type
-4. Open the user → **Personal Access Tokens → New** → copy the token
-5. Grant the user **Org Owner** (or **IAM Owner**) so it can manage users and sessions
+```sh
+cd zitadel-compose
+docker compose --env-file .env exec zitadel-api cat /zitadel/bootstrap/login-client.pat
+```
+
+Paste the output into `ZITADEL_SERVICE_ACCOUNT_TOKEN` in your `.env`.
 
 **`AUTH_SECRET`** — a random string used to sign JWTs. Generate one:
 
