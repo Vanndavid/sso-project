@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { signIn } from '@auth/sveltekit/client';
+	import { page } from '$app/state';
 
 	let { form } = $props();
 
@@ -8,6 +9,10 @@
 	let password = $state('');
 	let errorMessage = $state('');
 	let showForgot = $state(false);
+
+	const returnTo = $derived(
+		page.url.searchParams.get('returnTo') ?? '/'
+	);
 
 	async function submitLogin(event: SubmitEvent) {
 		event.preventDefault();
@@ -17,11 +22,11 @@
 			loginName,
 			password,
 			redirect: false,
-			redirectTo: '/'
+			redirectTo: returnTo   
 		});
 
 		if (response.ok) {
-			window.location.assign(response.url ?? '/');
+			window.location.assign(response.url ?? returnTo);
 		} else {
 			errorMessage = 'The username or password is incorrect.';
 		}

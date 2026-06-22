@@ -31,6 +31,25 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 		})
 	],
 	callbacks: {
+		redirect({ url, baseUrl }) {
+			const allowed = [
+				baseUrl,
+				'http://localhost:5001',
+				'http://localhost:5003'
+			];
+			if (url.startsWith('/')) {
+				return `${baseUrl}${url}`;
+			}
+			try {
+				const target = new URL(url);
+				if (allowed.includes(target.origin)) {
+					return target.toString();
+				}
+			} catch {
+				// ignore
+			}
+			return baseUrl;
+		},
 		jwt({ token, user }) {
 			if (user) {
 				token.preferredUsername = user.email;
