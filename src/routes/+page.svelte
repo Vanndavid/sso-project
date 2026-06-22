@@ -6,7 +6,6 @@
 	let { data, form } = $props();
 
 	let session = $derived(page.data.session);
-	console.log('Session:', session);
 	let editingUserId = $state<string | null>(null);
 </script>
 
