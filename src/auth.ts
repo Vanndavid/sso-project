@@ -52,15 +52,21 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 		},
 		jwt({ token, user }) {
 			if (user) {
-				token.preferredUsername = user.email;
+				token.sub = user.id;
+				token.email = user.email;
+				// user may be typed as User | AdapterUser; cast to any for custom prop
+				token.isAdmin = (user as any).isAdmin;
 			}
-
 			return token;
+
 		},
 		session({ session, token }) {
 			if (session.user) {
-				session.user.preferredUsername = token.preferredUsername as string | undefined;
-				session.user.isAdmin = token.preferredUsername === "zitadel-admin@zitadel.localhost";
+				(session.user as any).id = token.sub;
+				// token.email can be string | null | undefined — ensure a string for session.user.email
+				session.user.email = token.email ?? '';
+				// token.isAdmin may be unknown; ensure boolean | undefined
+				session.user.isAdmin = typeof token.isAdmin === 'boolean' ? token.isAdmin : undefined;
 			}
 
 			return session;

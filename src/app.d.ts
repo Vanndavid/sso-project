@@ -2,8 +2,13 @@
 // for information about these interfaces
 
 declare module '@auth/sveltekit' {
+	interface User {
+		id?: string;
+		isAdmin?: boolean;
+	}
 	interface Session {
 		user?: {
+			id?: string | null;
 			name?: string | null;
 			email?: string | null;
 			isAdmin?: boolean;
@@ -22,6 +27,10 @@ declare global {
 		// interface Platform {}
 		interface PageData {
 			session?: import('@auth/sveltekit').Session | null;
+		}
+		interface JWT {
+			sub?: string;
+			isAdmin?: boolean;
 		}
 	}
 }
