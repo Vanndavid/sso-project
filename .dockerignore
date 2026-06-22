@@ -1,0 +1,9 @@
+node_modules
+.git
+.env
+*.md
+app1
+app2
+app1api
+zitadel-compose
+zitadel-api.docx
