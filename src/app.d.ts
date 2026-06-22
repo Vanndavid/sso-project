@@ -6,6 +6,7 @@ declare module '@auth/sveltekit' {
 		user?: {
 			name?: string | null;
 			email?: string | null;
+			isAdmin?: boolean;
 			image?: string | null;
 			preferredUsername?: string;
 		};
@@ -19,6 +20,9 @@ declare global {
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}
+		interface PageData {
+			session?: import('@auth/sveltekit').Session | null;
+		}
 	}
 }
 

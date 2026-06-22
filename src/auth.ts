@@ -17,16 +17,15 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 				const loginName = typeof credentials.loginName === 'string' ? credentials.loginName : '';
 				const password = typeof credentials.password === 'string' ? credentials.password : '';
 
-				const user = await authenticateWithZitadel(loginName, password);
-
+				const user:any = await authenticateWithZitadel(loginName, password);
 				if (!user) {
 					return null;
 				}
-
 				return {
 					id: user.id,
-					name: user.displayName,
-					email: user.loginName
+					name: user.loginName,
+					email: user.loginName,
+                    isAdmin:(user.loginName==="zitadel-admin@zitadel.localhost")
 				};
 			}
 		})
@@ -42,9 +41,11 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 		session({ session, token }) {
 			if (session.user) {
 				session.user.preferredUsername = token.preferredUsername as string | undefined;
+				session.user.isAdmin = token.preferredUsername === "zitadel-admin@zitadel.localhost";
 			}
 
 			return session;
 		}
 	}
 });
+
