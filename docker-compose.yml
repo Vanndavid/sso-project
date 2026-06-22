@@ -21,8 +21,9 @@ services:
     ports:
       - ${AUTH_SERVICE_PORT:-5003}:5003
     environment:
-      AUTH_SECRET: ${AUTH_SECRET}
+      AUTH_SECRET: ${AUTH_SECRET:-demo-auth-secret-for-local-dev-only!!}
       ZITADEL_ISSUER: http://zitadel-internal
+      ZITADEL_SERVICE_ACCOUNT_TOKEN: ${ZITADEL_SERVICE_ACCOUNT_TOKEN:-}
     volumes:
       - zitadel-bootstrap:/zitadel/bootstrap:ro
     networks:
@@ -34,14 +35,12 @@ services:
         condition: service_started
     healthcheck:
       test:
-        - CMD
-        - node
-        - -e
-        - fetch('http://127.0.0.1:5003/login').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
-      interval: 5s
-      timeout: 5s
-      retries: 30
-      start_period: 30s
+        - CMD-SHELL
+        - wget -q --spider http://127.0.0.1:5003/health || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 18
+      start_period: 120s
 
   app1:
     build:

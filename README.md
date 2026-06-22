@@ -35,6 +35,34 @@ docker compose down -v
 docker compose up --build --wait
 ```
 
+### Troubleshooting
+
+**`auth-service` is unhealthy**
+
+Check the logs first:
+
+```sh
+docker compose logs auth-service
+```
+
+Common causes:
+
+1. **Stale ZITADEL volume** — if you ran ZITADEL before this demo stack, the auto-generated service token won't exist. Reset volumes:
+   ```sh
+   docker compose down -v
+   docker compose up --build --wait
+   ```
+2. **Slow first startup** — the auth service runs Vite in dev mode and can take 1–2 minutes on first boot. The healthcheck allows up to ~3 minutes before marking unhealthy.
+3. **Missing `.env`** — copy it with `cp .env.example .env`, or rely on the built-in demo defaults.
+
+Verify the health endpoint directly:
+
+```sh
+curl http://localhost:5003/health
+```
+
+Expected: `{"ok":true}`
+
 ## Local development (without Docker)
 
 **Requires:** Docker (for ZITADEL only), Node.js 18+, .NET SDK 10
