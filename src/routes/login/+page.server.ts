@@ -56,9 +56,8 @@ export const actions = {
 		}
 
 		const result = await setNewPassword(userId, verificationCode, password);
-
-		if (!result) {
-			return fail(400, { message: 'Could not reset password.' });
+		if (!result.ok) {
+			return fail(400, { message: result.message });
 		}
 
 		return {

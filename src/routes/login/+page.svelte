@@ -70,7 +70,7 @@
 	<p>Forgot password</p>
 
 	{#if form?.message}
-		<p>{form.message}</p>
+		<p style="color: red;">{form.message}</p>
 	{/if}
 
 	<form method="POST" action="?/requestCode" use:enhance>

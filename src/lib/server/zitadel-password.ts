@@ -90,10 +90,11 @@ export async function setNewPassword(userId: string, verificationCode: string, p
 			verificationCode
 		})
 	});
-
 	if (!response.ok) {
-		return null;
+		const error = await response.json();
+		const message = error.details?.[0]?.message ?? error.message ?? 'Failed to set new password.';
+		return { ok: false as const, message };
 	}
 
-	return await response.json();
+	return { ok: true as const, data: await response.json() };
 }
